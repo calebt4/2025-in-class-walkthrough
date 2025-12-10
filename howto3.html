@@ -1,0 +1,947 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Stay Safe Online – How to Avoid Hackers & Hacks</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    :root {
+      --bg: #050816;
+      --bg-alt: #0b1020;
+      --card: #111827;
+      --accent: #38bdf8;
+      --accent-soft: rgba(56, 189, 248, 0.12);
+      --accent-strong: #0ea5e9;
+      --text-main: #e5e7eb;
+      --text-muted: #9ca3af;
+      --danger: #f97373;
+      --radius-lg: 18px;
+      --shadow-soft: 0 18px 40px rgba(15, 23, 42, 0.65);
+      --shadow-strong: 0 24px 60px rgba(8, 47, 73, 0.9);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+        sans-serif;
+      background: radial-gradient(circle at top, #0f172a 0, #020617 55%);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+    }
+
+    a {
+      color: var(--accent-strong);
+      text-decoration: none;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+
+    /* HEADER + NAV / DIRECTORY */
+
+    header {
+      border-bottom: 1px solid rgba(148, 163, 184, 0.2);
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      backdrop-filter: blur(18px);
+      background: linear-gradient(
+        to bottom,
+        rgba(15, 23, 42, 0.92),
+        rgba(15, 23, 42, 0.8),
+        transparent
+      );
+    }
+
+    .nav {
+      max-width: 1080px;
+      margin: 0 auto;
+      padding: 1rem 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+    }
+
+    .brand-logo {
+      width: 32px;
+      height: 32px;
+      border-radius: 999px;
+      background: radial-gradient(circle at 30% 20%, #f9fafb 0, #38bdf8 40%, #0f172a 100%);
+      box-shadow: 0 0 22px rgba(56, 189, 248, 0.65);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      color: #020617;
+      font-weight: 800;
+      font-size: 0.95rem;
+    }
+
+    .brand-text {
+      display: flex;
+      flex-direction: column;
+      line-height: 1.1;
+    }
+
+    .brand-text span:first-child {
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      font-size: 0.95rem;
+    }
+
+    .brand-text span:last-child {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 1.25rem;
+      font-size: 0.9rem;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .nav-links a {
+      position: relative;
+      padding-bottom: 0.1rem;
+      color: var(--text-muted);
+    }
+
+    .nav-links a::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      bottom: -0.2rem;
+      width: 0;
+      height: 2px;
+      border-radius: 999px;
+      background: linear-gradient(to right, var(--accent), var(--accent-strong));
+      transition: width 0.22s ease;
+    }
+
+    .nav-links a:hover {
+      color: var(--text-main);
+    }
+
+    .nav-links a:hover::after {
+      width: 100%;
+    }
+
+    main {
+      flex: 1;
+    }
+
+    /* LAYOUT: FULL-WIDTH SECTIONS YOU SCROLL THROUGH */
+
+    .section {
+      width: 100%;
+      padding: 2.5rem 1.2rem;
+      position: relative;
+      z-index: 1;
+    }
+
+    .section:nth-child(odd) {
+      background: radial-gradient(circle at top left, #020617 0, #020617 40%, #020617 100%);
+    }
+
+    .section:nth-child(even) {
+      background: radial-gradient(circle at top right, #020617 0, #020617 40%, #020617 100%);
+    }
+
+    .section-inner {
+      max-width: 1080px;
+      margin: 0 auto;
+    }
+
+    /* CARDS & HOVER EFFECTS */
+
+    .hero-card,
+    .content-card,
+    .link-card,
+    .danger-banner,
+    .step-item {
+      transition:
+        transform 0.18s ease,
+        box-shadow 0.18s ease,
+        border-color 0.18s ease,
+        background 0.18s ease;
+    }
+
+    .hero-card:hover,
+    .content-card:hover,
+    .link-card:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-strong);
+      border-color: rgba(56, 189, 248, 0.65);
+      background: radial-gradient(circle at top left, #1f2937 0, #020617 55%);
+    }
+
+    .step-item:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 10px 28px rgba(15, 23, 42, 0.9);
+      border-color: var(--accent-strong);
+      background: rgba(15, 23, 42, 0.95);
+    }
+
+    .danger-banner:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 14px 32px rgba(127, 29, 29, 0.9);
+      border-color: #fecaca;
+      background: radial-gradient(circle at top left, rgba(248, 113, 113, 0.3), rgba(15, 23, 42, 1));
+    }
+
+    /* HERO / INTRO SECTION */
+
+    .hero-card {
+      background: radial-gradient(circle at top left, #1e293b 0, #020617 45%);
+      border-radius: 26px;
+      padding: 2rem 1.75rem;
+      box-shadow: var(--shadow-soft);
+      border: 1px solid rgba(148, 163, 184, 0.28);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.25rem 0.65rem;
+      border-radius: 999px;
+      background: rgba(34, 197, 94, 0.06);
+      border: 1px solid rgba(52, 211, 153, 0.3);
+      font-size: 0.75rem;
+      color: #a7f3d0;
+      margin-bottom: 1rem;
+    }
+
+    .hero-pill-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #22c55e;
+      box-shadow: 0 0 14px rgba(22, 163, 74, 0.8);
+    }
+
+    h1 {
+      font-size: clamp(1.9rem, 2.8vw + 1rem, 2.6rem);
+      margin-bottom: 0.75rem;
+    }
+
+    .hero-subtitle {
+      color: var(--text-muted);
+      font-size: 0.98rem;
+      max-width: 36rem;
+      line-height: 1.6;
+    }
+
+    .hero-highlight {
+      color: var(--accent-strong);
+      font-weight: 600;
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+      margin-top: 1.8rem;
+    }
+
+    .hero-stat {
+      background: rgba(15, 23, 42, 0.8);
+      border-radius: 18px;
+      padding: 0.9rem 1rem;
+      border: 1px solid rgba(148, 163, 184, 0.35);
+      position: relative;
+    }
+
+    .hero-stat-label {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      margin-bottom: 0.25rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .hero-stat-value {
+      font-size: 1.2rem;
+      font-weight: 600;
+    }
+
+    .hero-float {
+      position: absolute;
+      right: -50px;
+      top: -50px;
+      width: 180px;
+      height: 180px;
+      border-radius: 999px;
+      background: radial-gradient(circle at 30% 20%, #dbeafe 0, #0ea5e9 40%, transparent 70%);
+      opacity: 0.4;
+      filter: blur(1px);
+    }
+
+    /* GENERIC CONTENT CARD */
+
+    .content-card {
+      background: rgba(15, 23, 42, 0.9);
+      border-radius: var(--radius-lg);
+      padding: 1.6rem 1.4rem;
+      border: 1px solid rgba(148, 163, 184, 0.22);
+      box-shadow: 0 14px 32px rgba(15, 23, 42, 0.9);
+    }
+
+    .card-heading {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 0.75rem;
+      margin-bottom: 0.9rem;
+    }
+
+    .card-heading h2 {
+      font-size: 1.1rem;
+    }
+
+    .card-tag {
+      font-size: 0.75rem;
+      padding: 0.15rem 0.6rem;
+      border-radius: 999px;
+      background: rgba(56, 189, 248, 0.16);
+      border: 1px solid rgba(56, 189, 248, 0.45);
+      color: #e0f2fe;
+    }
+
+    /* BULLETED STEPS */
+
+    .steps-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      margin-top: 0.5rem;
+    }
+
+    .step-item {
+      display: grid;
+      grid-template-columns: auto minmax(0, 1fr);
+      gap: 0.75rem;
+      align-items: flex-start;
+      padding: 0.75rem 0.85rem;
+      border-radius: 14px;
+      background: rgba(15, 23, 42, 0.85);
+      border: 1px solid rgba(75, 85, 99, 0.7);
+    }
+
+    .step-bullet {
+      width: 22px;
+      height: 22px;
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.7);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.7rem;
+      color: var(--accent-strong);
+      background: radial-gradient(circle at 30% 20%, rgba(56, 189, 248, 0.12) 0, transparent 60%);
+    }
+
+    .step-title {
+      font-weight: 600;
+      margin-bottom: 0.2rem;
+      font-size: 0.94rem;
+    }
+
+    .step-text {
+      font-size: 0.87rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+
+    .step-text strong {
+      color: var(--text-main);
+      font-weight: 600;
+    }
+
+    /* RISK & RESOURCE SECTION */
+
+    .risk-pill-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+      margin-top: 0.6rem;
+    }
+
+    .risk-pill {
+      font-size: 0.75rem;
+      padding: 0.2rem 0.6rem;
+      border-radius: 999px;
+      border: 1px solid rgba(248, 250, 252, 0.3);
+      background: rgba(15, 23, 42, 0.9);
+      color: #e5e7eb;
+    }
+
+    .callout {
+      margin-top: 0.95rem;
+      font-size: 0.82rem;
+      color: var(--text-muted);
+    }
+
+    .callout strong {
+      color: #e5e7eb;
+    }
+
+    .link-card {
+      background: radial-gradient(circle at top left, #0b1120 0, #020617 55%);
+      border-radius: var(--radius-lg);
+      padding: 1.4rem 1.25rem;
+      border: 1px solid rgba(56, 189, 248, 0.5);
+      box-shadow: var(--shadow-strong);
+      position: relative;
+      overflow: hidden;
+      margin-top: 1.2rem;
+    }
+
+    .link-card::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        135deg,
+        rgba(56, 189, 248, 0.16),
+        transparent,
+        rgba(129, 140, 248, 0.12)
+      );
+      opacity: 0.55;
+      pointer-events: none;
+    }
+
+    .link-card-inner {
+      position: relative;
+      z-index: 1;
+    }
+
+    .link-title {
+      font-size: 0.98rem;
+      margin-bottom: 0.3rem;
+      font-weight: 600;
+    }
+
+    .link-text {
+      font-size: 0.86rem;
+      color: #e5e7eb;
+      margin-bottom: 0.7rem;
+    }
+
+    .link-meta {
+      font-size: 0.78rem;
+      color: #c7d2fe;
+      margin-bottom: 0.8rem;
+    }
+
+    .link-button {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-size: 0.88rem;
+      padding: 0.45rem 0.85rem;
+      border-radius: 999px;
+      background: rgba(15, 23, 42, 0.9);
+      border: 1px solid rgba(191, 219, 254, 0.7);
+      text-decoration: none;
+      color: #e0f2fe;
+    }
+
+    .link-button span.icon {
+      display: inline-flex;
+      width: 16px;
+      height: 16px;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.85rem;
+    }
+
+    .link-button:hover {
+      background: rgba(30, 64, 175, 0.8);
+      border-color: rgba(191, 219, 254, 0.95);
+      text-decoration: none;
+    }
+
+    /* ALERT / HACKED BANNER */
+
+    .danger-banner {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.75rem;
+      padding: 0.8rem 0.9rem;
+      border-radius: 18px;
+      background: radial-gradient(circle at top left, rgba(248, 113, 113, 0.2), rgba(15, 23, 42, 0.96));
+      border: 1px solid rgba(248, 113, 113, 0.7);
+      font-size: 0.84rem;
+      line-height: 1.5;
+      color: #fee2e2;
+      margin-top: 1.2rem;
+    }
+
+    .danger-dot {
+      width: 15px;
+      height: 15px;
+      border-radius: 999px;
+      border: 2px solid #fecaca;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.55rem;
+    }
+
+    /* FOOTER */
+
+    footer {
+      border-top: 1px solid rgba(148, 163, 184, 0.2);
+      padding: 1rem 1.5rem 1.4rem;
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      text-align: center;
+      position: relative;
+      z-index: 1;
+    }
+
+    footer span {
+      opacity: 0.9;
+    }
+
+    /* LASER OVERLAY */
+
+    #laser-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 999;
+      pointer-events: none;
+      background: radial-gradient(circle at center, rgba(15,23,42,0.8) 0, rgba(15,23,42,0.3) 40%, transparent 70%);
+      animation: laserFadeOut 4.5s ease-out forwards;
+    }
+
+    #laserCanvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    @keyframes laserFadeOut {
+      0% {
+        opacity: 1;
+      }
+      70% {
+        opacity: 1;
+      }
+      100% {
+        opacity: 0;
+      }
+    }
+
+    /* RESPONSIVE */
+
+    @media (max-width: 640px) {
+      .nav {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      .hero-card {
+        padding: 1.4rem 1.2rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- LASER CANVAS OVERLAY -->
+  <div id="laser-overlay">
+    <canvas id="laserCanvas"></canvas>
+  </div>
+
+  <header>
+    <div class="nav">
+      <div class="brand">
+        <div class="brand-logo">SH</div>
+        <div class="brand-text">
+          <span>SecureHub</span>
+          <span>Everyday cyber hygiene</span>
+        </div>
+      </div>
+      <!-- Directory / site navigation -->
+      <nav class="nav-links" aria-label="Site">
+        <a href="Index.html">Home</a>
+        <a href="howto.html">Avoiding Hacks</a>
+        <a href="howto2.html">Top Risks</a>
+        <a href="Index.html">Resources</a>
+        <a href="tips-passwords.html">Password Guide</a>
+        <a href="incident-checklist.html">If You’re Hacked</a>
+      </nav>
+    </div>
+    
+  </header>
+
+  <main>
+    <!-- SECTION 1: HERO -->
+    <section class="section" id="home">
+      <div class="section-inner">
+        <div class="hero-card">
+          <div class="hero-float"></div>
+          <div class="hero-pill">
+            <span class="hero-pill-dot"></span>
+            Real-world tips to stay ahead of attackers
+          </div>
+          <h1>How to Avoid Hackers, Hacks & Phishing Attacks</h1>
+          <p class="hero-subtitle">
+            Most attacks don’t start with “movie-style” hacking. They start with a
+            <span class="hero-highlight">tricked click</span>, a weak password,
+            or a rushed decision. Use this page as your quick, practical checklist
+            for staying safe online at home and at work.
+          </p>
+          <iframe src="https://www.usa.gov" width="700" height ="700"> </iframe>
+<div class='tableauPlaceholder' id='viz1765214654226' style='position: relative'><noscript><a href='#'><img alt='  Hacker News Dashboard ' src='https:&#47;&#47;public.tableau.com&#47;static&#47;images&#47;Ha&#47;HackerNewsDashboard_16989934644100&#47;HackerNewsDashboard&#47;1_rss.png' style='border: none' /></a></noscript><object class='tableauViz'  style='display:none;'><param name='host_url' value='https%3A%2F%2Fpublic.tableau.com%2F' /> <param name='embed_code_version' value='3' /> <param name='site_root' value='' /><param name='name' value='HackerNewsDashboard_16989934644100&#47;HackerNewsDashboard' /><param name='tabs' value='no' /><param name='toolbar' value='yes' /><param name='static_image' value='https:&#47;&#47;public.tableau.com&#47;static&#47;images&#47;Ha&#47;HackerNewsDashboard_16989934644100&#47;HackerNewsDashboard&#47;1.png' /> <param name='animate_transition' value='yes' /><param name='display_static_image' value='yes' /><param name='display_spinner' value='yes' /><param name='display_overlay' value='yes' /><param name='display_count' value='yes' /><param name='language' value='en-US' /></object></div>                <script type='text/javascript'>                    var divElement = document.getElementById('viz1765214654226');                    var vizElement = divElement.getElementsByTagName('object')[0];                    vizElement.style.width='1650px';vizElement.style.height='1627px';                    var scriptElement = document.createElement('script');                    scriptElement.src = 'https://public.tableau.com/javascripts/api/viz_v1.js';                    vizElement.parentNode.insertBefore(scriptElement, vizElement);                </script>
+            <div class="hero-stat">
+              <div class="hero-stat-label">FOCUS</div>
+              <div class="hero-stat-value">Everyday protection</div>
+            </div>
+            <div class="hero-stat">
+              <div class="hero-stat-label">COVERS</div>
+              <div class="hero-stat-value">Email · Passwords · Devices</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 2: BULLETED STEPS -->
+    <section class="section" id="steps">
+      <div class="section-inner">
+        <div class="content-card">
+          <div class="card-heading">
+            <h2>Core Steps to Avoid Hackers & Hacks</h2>
+            <span class="card-tag">Bulleted checklist</span>
+          </div>
+          <ul class="steps-list">
+            <li class="step-item">
+              <span class="step-bullet">1</span>
+              <div>
+                <div class="step-title">Be ruthless with suspicious emails & texts</div>
+                <p class="step-text">
+                  Never click links or open attachments from messages you weren’t expecting.
+                  <strong>Hover over links</strong> to check the real URL, and watch for
+                  misspellings, odd senders, or urgent language (“act now or your
+                  account will be closed!”).
+                </p>
+              </div>
+            </li>
+
+            <li class="step-item">
+              <span class="step-bullet">2</span>
+              <div>
+                <div class="step-title">Use strong, unique passwords everywhere</div>
+                <p class="step-text">
+                  Create long passphrases (e.g., <strong>four+ random words</strong>)
+                  and <strong>do not reuse</strong> the same password across sites.
+                  A password manager can generate and store unique passwords so you
+                  only remember one master password.
+                </p>
+              </div>
+            </li>
+
+            <li class="step-item">
+              <span class="step-bullet">3</span>
+              <div>
+                <div class="step-title">Turn on multi-factor authentication (MFA)</div>
+                <p class="step-text">
+                  Wherever possible, enable <strong>MFA</strong> (codes via app, text,
+                  or hardware key). Even if hackers steal your password, MFA makes it
+                  much harder for them to log in.
+                </p>
+              </div>
+            </li>
+
+            <li class="step-item">
+              <span class="step-bullet">4</span>
+              <div>
+                <div class="step-title">Keep software & devices updated</div>
+                <p class="step-text">
+                  Turn on <strong>automatic updates</strong> for your operating system,
+                  browser, and apps. Many attacks exploit known holes that updates
+                  have already fixed.
+                </p>
+              </div>
+            </li>
+
+            <li class="step-item">
+              <span class="step-bullet">5</span>
+              <div>
+                <div class="step-title">Lock down your accounts’ recovery options</div>
+                <p class="step-text">
+                  Check that your backup email, phone numbers, and security questions
+                  are current and secure. Avoid obvious answers (like your mother’s
+                  real maiden name) that can be found on social media.
+                </p>
+              </div>
+            </li>
+
+            <li class="step-item">
+              <span class="step-bullet">6</span>
+              <div>
+                <div class="step-title">Be careful on public Wi-Fi</div>
+                <p class="step-text">
+                  On public networks (cafés, airports, hotels), assume others could
+                  see your traffic. Avoid logging into sensitive accounts unless
+                  you’re using a <strong>VPN</strong> or your own mobile hotspot.
+                </p>
+              </div>
+            </li>
+
+            <li class="step-item">
+              <span class="step-bullet">7</span>
+              <div>
+                <div class="step-title">Review your accounts & devices regularly</div>
+                <p class="step-text">
+                  Check bank, email, and social media activity often. Look for
+                  logins from unknown locations/devices and
+                  <strong>sign out of sessions you don’t recognize</strong>; then change your password.
+                </p>
+              </div>
+            </li>
+
+            <li class="step-item">
+              <span class="step-bullet">8</span>
+              <div>
+                <div class="step-title">Back up important data securely</div>
+                <p class="step-text">
+                  Keep copies of key files in at least two places (for example,
+                  encrypted cloud storage and an external drive you disconnect when
+                  not in use). Backups help you recover from ransomware or device loss.
+                </p>
+              </div>
+            </li>
+
+            <li class="step-item">
+              <span class="step-bullet">9</span>
+              <div>
+                <div class="step-title">Slow down before you click or pay</div>
+                <p class="step-text">
+                  Hackers rely on urgency. If a message demands money, gift cards, or
+                  crypto <strong>right now</strong>, stop. Verify using a phone number
+                  or website you find yourself, not the one in the message.
+                </p>
+              </div>
+            </li>
+
+            <li class="step-item">
+              <span class="step-bullet">10</span>
+              <div>
+                <div class="step-title">Ask for help when something feels off</div>
+                <p class="step-text">
+                  If you’re unsure whether something is legit,
+                  <strong>ask a trusted person or your IT/security team</strong>.
+                  It’s always better to double-check than to clean up a breach later.
+                </p>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 3: RISKS & RESOURCES -->
+    <section class="section" id="risks">
+      <div class="section-inner">
+        <div class="content-card">
+          <div class="card-heading">
+            <h2>Top Risk Areas</h2>
+            <span class="card-tag">Watch these first</span>
+          </div>
+          <div class="risk-pill-row">
+            <span class="risk-pill">Suspicious email links</span>
+            <span class="risk-pill">Fake login pages</span>
+            <span class="risk-pill">Old, reused passwords</span>
+            <span class="risk-pill">Unpatched devices</span>
+            <span class="risk-pill">Public Wi-Fi without VPN</span>
+          </div>
+          <p class="callout">
+            <strong>Rule of thumb:</strong> if something feels urgent, emotional,
+            or “too good to be true,” pause and verify using another trusted
+            method.
+          </p>
+
+          <!-- External article about avoiding hacks & phishing -->
+          <section id="resources" class="link-card">
+            <div class="link-card-inner">
+              <div class="link-title">Deep-dive: Recognize & avoid phishing</div>
+              <p class="link-text">
+                The U.S. Federal Trade Commission keeps an up-to-date guide on how
+                to spot phishing emails and texts, plus what to do if you click by
+                mistake.
+              </p>
+              <p class="link-meta">
+                Recommended reading:
+                <em>“Protect yourself from phishing scams” – FTC Consumer Advice</em>
+              </p>
+              <a
+                class="link-button"
+                href="https://consumer.ftc.gov/consumer-alerts/2025/04/protect-yourself-phishing-scams"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <span class="icon">↗</span>
+                <span>Open official FTC article</span>
+              </a>
+              <p class="callout">
+                <strong>Tip:</strong> when in doubt, visit the organization’s site
+                directly in your browser instead of clicking the link in a message.
+              </p>
+            </div>
+          </section>
+
+          <div class="danger-banner">
+            <div class="danger-dot">!</div>
+            <div>
+              If you think you’ve been hacked:
+              <strong>disconnect from the internet</strong>, change your passwords
+              from a clean device, and contact your IT/security team or provider
+              immediately.
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <span>SecureHub · Simple practices to protect your digital life.</span>
+  </footer>
+
+  <!-- LASER SCRIPT -->
+  <script>
+    (function () {
+      const overlay = document.getElementById("laser-overlay");
+      const canvas = document.getElementById("laserCanvas");
+      const ctx = canvas.getContext("2d");
+
+      function resize() {
+        const dpr = window.devicePixelRatio || 1;
+        canvas.width = window.innerWidth * dpr;
+        canvas.height = window.innerHeight * dpr;
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      }
+
+      resize();
+      window.addEventListener("resize", resize);
+
+      const colors = [
+        "rgba(56,189,248,0.9)",   // cyan
+        "rgba(129,140,248,0.9)",  // indigo
+        "rgba(248,113,113,0.9)",  // red
+        "rgba(52,211,153,0.9)"    // green
+      ];
+
+      const lasers = [];
+      const maxLasers = 50;
+      const durationMs = 3500; // how long we actively draw
+      const startTime = performance.now();
+
+      function randomEdgePoint() {
+        const side = Math.floor(Math.random() * 4);
+        const w = window.innerWidth;
+        const h = window.innerHeight;
+        switch (side) {
+          case 0: return { x: Math.random() * w, y: 0 };      // top
+          case 1: return { x: w, y: Math.random() * h };      // right
+          case 2: return { x: Math.random() * w, y: h };      // bottom
+          default: return { x: 0, y: Math.random() * h };     // left
+        }
+      }
+
+      function spawnLaser() {
+        const start = randomEdgePoint();
+        const end = { x: Math.random() * window.innerWidth, y: Math.random() * window.innerHeight };
+        lasers.push({
+          start,
+          end,
+          life: 0,
+          maxLife: 400 + Math.random() * 600,
+          color: colors[Math.floor(Math.random() * colors.length)]
+        });
+        if (lasers.length > maxLasers) lasers.shift();
+      }
+
+      function draw(timestamp) {
+        const elapsed = timestamp - startTime;
+
+        // Clear with low alpha to get trails
+        ctx.globalCompositeOperation = "source-over";
+        ctx.fillStyle = "rgba(2,6,23,0.22)";
+        ctx.fillRect(0, 0, window.innerWidth, window.innerHeight);
+
+        // Occasionally spawn new lasers while within duration
+        if (elapsed < durationMs) {
+          for (let i = 0; i < 3; i++) {
+            spawnLaser();
+          }
+        }
+
+        // Draw and update lasers
+        ctx.globalCompositeOperation = "lighter";
+        lasers.forEach((laser) => {
+          const t = laser.life / laser.maxLife;
+          const opacity = 1 - t;
+          if (opacity <= 0) return;
+
+          ctx.save();
+          ctx.shadowBlur = 18;
+          ctx.shadowColor = laser.color;
+          ctx.lineWidth = 2 + (1 - t) * 2;
+          ctx.strokeStyle = laser.color.replace("0.9", opacity.toFixed(2));
+
+          ctx.beginPath();
+          ctx.moveTo(laser.start.x, laser.start.y);
+          ctx.lineTo(laser.end.x, laser.end.y);
+          ctx.stroke();
+          ctx.restore();
+
+          laser.life += 16;
+        });
+
+        // Remove dead lasers
+        for (let i = lasers.length - 1; i >= 0; i--) {
+          if (lasers[i].life >= lasers[i].maxLife) {
+            lasers.splice(i, 1);
+          }
+        }
+
+        // Stop animation once overlay is fully faded
+        const totalFadeTime = 4500;
+        if (elapsed < totalFadeTime) {
+          requestAnimationFrame(draw);
+        } else {
+          // remove overlay from DOM after fade
+          if (overlay && overlay.parentNode) {
+            overlay.parentNode.removeChild(overlay);
+          }
+        }
+      }
+
+      requestAnimationFrame(draw);
+    })();
+  </script>
+</body>
+</html>

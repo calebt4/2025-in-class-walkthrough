@@ -1,0 +1,908 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Secure Snake – Laser Grid</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    :root {
+      --bg: #020617;
+      --bg-alt: #0b1020;
+      --card: #111827;
+      --accent: #38bdf8;
+      --accent-strong: #0ea5e9;
+      --accent-soft: rgba(56, 189, 248, 0.15);
+      --text-main: #e5e7eb;
+      --text-muted: #9ca3af;
+      --danger: #f97373;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+        sans-serif;
+      background: radial-gradient(circle at top, #0f172a 0, #020617 60%);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .page {
+      width: 100%;
+      max-width: 1100px;
+      padding: 1.5rem;
+    }
+
+    .card {
+      background: radial-gradient(circle at top left, #111827 0, #020617 60%);
+      border-radius: 24px;
+      padding: 1.5rem 1.6rem 1.8rem;
+      border: 1px solid rgba(148, 163, 184, 0.3);
+      box-shadow: 0 18px 40px rgba(15, 23, 42, 0.9);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .glow-orb {
+      position: absolute;
+      width: 260px;
+      height: 260px;
+      border-radius: 999px;
+      right: -90px;
+      top: -90px;
+      background: radial-gradient(
+        circle at 30% 20%,
+        rgba(56, 189, 248, 0.9) 0,
+        rgba(56, 189, 248, 0.1) 40%,
+        transparent 70%
+      );
+      opacity: 0.4;
+      filter: blur(1px);
+      pointer-events: none;
+    }
+
+    header {
+      margin-bottom: 1rem;
+      position: relative;
+      z-index: 1;
+    }
+
+    h1 {
+      font-size: clamp(1.7rem, 2.5vw + 1rem, 2.3rem);
+      display: flex;
+      align-items: baseline;
+      gap: 0.5rem;
+    }
+
+    h1 span.accent {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--accent-strong);
+      padding: 0.12rem 0.55rem;
+      border-radius: 999px;
+      background: rgba(56, 189, 248, 0.1);
+      border: 1px solid rgba(56, 189, 248, 0.4);
+    }
+
+    .subtitle {
+      margin-top: 0.3rem;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    .layout {
+      margin-top: 1.1rem;
+      display: grid;
+      grid-template-columns: minmax(0, 2.7fr) minmax(0, 1.1fr);
+      gap: 1.25rem;
+    }
+
+    @media (max-width: 900px) {
+      .layout {
+        grid-template-columns: minmax(0, 1fr);
+      }
+    }
+
+    /* GAME AREA */
+
+    .game-shell {
+      background: radial-gradient(circle at top, #020617 0, #020617 60%);
+      border-radius: 18px;
+      padding: 0.75rem;
+      border: 1px solid rgba(51, 65, 85, 0.9);
+      position: relative;
+      box-shadow: inset 0 0 0 1px rgba(15, 23, 42, 0.9);
+    }
+
+    .game-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-bottom: 0.4rem;
+      padding: 0 0.1rem;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    .score-group {
+      display: flex;
+      gap: 0.9rem;
+    }
+
+    .score-label {
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      font-size: 0.7rem;
+      color: var(--text-muted);
+    }
+
+    .score-value {
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--accent-strong);
+    }
+
+    .hi-score-value {
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: #facc15;
+    }
+
+    .power-value {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: #a5b4fc;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.25rem;
+      font-size: 0.72rem;
+      color: var(--accent-strong);
+      padding: 0.1rem 0.55rem;
+      border-radius: 999px;
+      border: 1px solid rgba(56, 189, 248, 0.5);
+      background: var(--accent-soft);
+    }
+
+    .canvas-wrap {
+      position: relative;
+      border-radius: 14px;
+      overflow: hidden;
+      border: 1px solid rgba(51, 65, 85, 0.95);
+    }
+
+    canvas {
+      display: block;
+      width: 100%;
+      background:
+        radial-gradient(circle at top, #020617 0, #020617 40%, #020617 100%);
+    }
+
+    .overlay {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      pointer-events: none;
+      background: radial-gradient(circle at center, rgba(15, 23, 42, 0.8), rgba(15, 23, 42, 0.96));
+      opacity: 0;
+      transition: opacity 0.2s ease;
+    }
+
+    .overlay.visible {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .overlay-content {
+      text-align: center;
+      padding: 1rem 1.3rem;
+      border-radius: 16px;
+      border: 1px solid rgba(56, 189, 248, 0.6);
+      background: rgba(15, 23, 42, 0.96);
+      box-shadow: 0 18px 40px rgba(15, 23, 42, 0.9);
+    }
+
+    .overlay-content h2 {
+      font-size: 1.2rem;
+      margin-bottom: 0.3rem;
+    }
+
+    .overlay-content p {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-bottom: 0.7rem;
+    }
+
+    .overlay-button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.3rem;
+      padding: 0.35rem 0.85rem;
+      border-radius: 999px;
+      border: 1px solid rgba(56, 189, 248, 0.9);
+      background: linear-gradient(
+        to right,
+        rgba(56, 189, 248, 0.15),
+        rgba(56, 189, 248, 0.35)
+      );
+      color: var(--text-main);
+      font-size: 0.8rem;
+      cursor: pointer;
+    }
+
+    .overlay-button:hover {
+      filter: brightness(1.08);
+    }
+
+    /* SIDEBAR / CONTROLS */
+
+    .side-card {
+      border-radius: 18px;
+      padding: 0.8rem 0.9rem;
+      background: rgba(15, 23, 42, 0.9);
+      border: 1px solid rgba(51, 65, 85, 0.9);
+      margin-bottom: 0.6rem;
+    }
+
+    .side-title {
+      font-size: 0.9rem;
+      font-weight: 600;
+      margin-bottom: 0.1rem;
+    }
+
+    .side-sub {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-bottom: 0.4rem;
+    }
+
+    .keys {
+      display: grid;
+      grid-template-columns: repeat(3, 22px);
+      gap: 0.18rem;
+      margin-top: 0.2rem;
+    }
+
+    .key {
+      width: 22px;
+      height: 22px;
+      border-radius: 5px;
+      border: 1px solid rgba(148, 163, 184, 0.8);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.7rem;
+      color: var(--text-main);
+      background: rgba(15, 23, 42, 0.9);
+    }
+
+    .keys-row {
+      display: flex;
+      gap: 0.18rem;
+      justify-content: center;
+      margin-top: 0.1rem;
+    }
+
+    .bullet-list {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      list-style: disc;
+      padding-left: 1rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <div class="card">
+      <div class="glow-orb"></div>
+
+      <header>
+        <h1>
+          Secure Snake
+          <span class="accent">Laser Grid</span>
+        </h1>
+        <p class="subtitle">
+          Arrow keys or WASD to move. Press <strong>L</strong> to fire lasers. Space to start / restart.
+        </p>
+      </header>
+
+      <div class="layout">
+        <!-- GAME AREA -->
+        <section class="game-shell">
+          <div class="game-header">
+            <div class="score-group">
+              <div>
+                <div class="score-label">Score</div>
+                <div class="score-value" id="score">0</div>
+              </div>
+              <div>
+                <div class="score-label">Best</div>
+                <div class="hi-score-value" id="highScore">0</div>
+              </div>
+              <div>
+                <div class="score-label">Power</div>
+                <div class="power-value" id="powerLevel">Lv.1</div>
+              </div>
+            </div>
+            <div class="badge">Space: start · L: lasers · Every 2 laser orbs = power up</div>
+          </div>
+
+          <div class="canvas-wrap">
+            <!-- Bigger canvas -->
+            <canvas id="game" width="720" height="480"></canvas>
+
+            <div class="overlay visible" id="startOverlay">
+              <div class="overlay-content">
+                <h2>Ready to Hack the Grid?</h2>
+                <p>Press <strong>Space</strong> or click below to start.</p>
+                <button class="overlay-button" id="startButton">
+                  ▶ Start Game
+                </button>
+              </div>
+            </div>
+
+            <div class="overlay" id="gameOverOverlay">
+              <div class="overlay-content">
+                <h2>Game Over</h2>
+                <p id="finalScoreText">You scored 0 points.</p>
+                <button class="overlay-button" id="restartButton">
+                  ↻ Play Again
+                </button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- SIDE INFO -->
+        <aside>
+          <div class="side-card">
+            <div class="side-title">Controls</div>
+            <div class="side-sub">Move with Arrow keys or WASD. Fire lasers with L.</div>
+
+            <div class="keys" aria-hidden="true" style="justify-content:center; margin-bottom:0.25rem;">
+              <div></div>
+              <div class="key">↑</div>
+              <div></div>
+            </div>
+            <div class="keys-row" aria-hidden="true">
+              <div class="key">←</div>
+              <div class="key">↓</div>
+              <div class="key">→</div>
+            </div>
+
+            <div class="side-sub" style="margin-top:0.45rem;">Or:</div>
+            <div class="keys" aria-hidden="true" style="justify-content:center; margin-bottom:0.25rem;">
+              <div></div>
+              <div class="key">W</div>
+              <div></div>
+            </div>
+            <div class="keys-row" aria-hidden="true">
+              <div class="key">A</div>
+              <div class="key">S</div>
+              <div class="key">D</div>
+            </div>
+          </div>
+
+          <div class="side-card">
+            <div class="side-title">Rules</div>
+            <ul class="bullet-list">
+              <li>Eat the <span style="color:var(--danger);">red packets</span> or shoot them with lasers to collect.</li>
+              <li>Don’t hit the walls or your own tail.</li>
+              <li>Each packet is worth <strong>1 point</strong>.</li>
+              <li>Speed increases slightly as you score.</li>
+              <li>Every <strong>2 orbs collected by lasers</strong> increases your laser power.</li>
+            </ul>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      const canvas = document.getElementById("game");
+      const ctx = canvas.getContext("2d");
+
+      const scoreEl = document.getElementById("score");
+      const highScoreEl = document.getElementById("highScore");
+      const powerLevelEl = document.getElementById("powerLevel");
+      const startOverlay = document.getElementById("startOverlay");
+      const gameOverOverlay = document.getElementById("gameOverOverlay");
+      const finalScoreText = document.getElementById("finalScoreText");
+      const startButton = document.getElementById("startButton");
+      const restartButton = document.getElementById("restartButton");
+
+      const tileSize = 20;
+      const tilesX = canvas.width / tileSize;
+      const tilesY = canvas.height / tileSize;
+
+      // Timing for smooth movement
+      const BASE_STEP_SEC = 0.14; // base time between tile moves
+      let stepDurationSec = BASE_STEP_SEC;
+
+      let snake = [];
+      let prevSnake = [];
+      let direction = { x: 1, y: 0 };
+      let nextDirection = { x: 1, y: 0 };
+      let food = { x: 0, y: 0 };
+      let score = 0;
+      let highScore = 0;
+
+      let gameState = "idle"; // 'idle' | 'running' | 'over'
+
+      let lastFrameTime = 0;
+      let stepAccumulator = 0;
+
+      // Lasers
+      const lasers = [];
+      const BASE_LASER_SPEED = 700; // px/sec
+      const LASER_COOLDOWN = 180; // ms between shots
+      let lastLaserTime = 0;
+
+      // Laser power-ups
+      const MAX_LASER_POWER = 3; // Levels 1..3
+      let laserPowerLevel = 1;   // start at level 1
+      let laserCollectedCount = 0; // orbs collected via lasers
+
+      function updatePowerUI() {
+        powerLevelEl.textContent = `Lv.${laserPowerLevel}`;
+      }
+
+      function initSnake() {
+        snake = [];
+        const startX = Math.floor(tilesX / 2);
+        const startY = Math.floor(tilesY / 2);
+        for (let i = 0; i < 5; i++) {
+          snake.push({ x: startX - i, y: startY });
+        }
+        prevSnake = snake.map(seg => ({ ...seg }));
+        direction = { x: 1, y: 0 };
+        nextDirection = { x: 1, y: 0 };
+      }
+
+      function spawnFood() {
+        let valid = false;
+        let fx, fy;
+        while (!valid) {
+          fx = Math.floor(Math.random() * tilesX);
+          fy = Math.floor(Math.random() * tilesY);
+          valid = !snake.some(seg => seg.x === fx && seg.y === fy);
+        }
+        food = { x: fx, y: fy };
+      }
+
+      function updateScore() {
+        scoreEl.textContent = score;
+        if (score > (highScore || 0)) {
+          highScore = score;
+          highScoreEl.textContent = highScore;
+          try {
+            localStorage.setItem("secureSnakeHighScore", String(highScore));
+          } catch (e) {}
+        }
+      }
+
+      function loadHighScore() {
+        try {
+          const stored = localStorage.getItem("secureSnakeHighScore");
+          if (stored) {
+            highScore = parseInt(stored, 10) || 0;
+            highScoreEl.textContent = highScore;
+          } else {
+            highScore = 0;
+          }
+        } catch (e) {
+          highScore = 0;
+        }
+      }
+
+      function recalcSpeed() {
+        // Slight speed-up with score, clamped
+        const factor = Math.max(0.55, 1 - score * 0.03);
+        stepDurationSec = BASE_STEP_SEC * factor;
+      }
+
+      function drawBackground() {
+        const gradient = ctx.createRadialGradient(
+          canvas.width * 0.5,
+          0,
+          10,
+          canvas.width * 0.5,
+          canvas.height * 0.8,
+          canvas.width
+        );
+        gradient.addColorStop(0, "#020617");
+        gradient.addColorStop(0.5, "#020617");
+        gradient.addColorStop(1, "#020617");
+        ctx.fillStyle = gradient;
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+      }
+
+      function drawGrid() {
+        ctx.strokeStyle = "rgba(15,23,42,0.8)";
+        ctx.lineWidth = 1;
+
+        for (let x = 1; x < tilesX; x++) {
+          ctx.beginPath();
+          ctx.moveTo(x * tileSize + 0.5, 0);
+          ctx.lineTo(x * tileSize + 0.5, canvas.height);
+          ctx.stroke();
+        }
+
+        for (let y = 1; y < tilesY; y++) {
+          ctx.beginPath();
+          ctx.moveTo(0, y * tileSize + 0.5);
+          ctx.lineTo(canvas.width, y * tileSize + 0.5);
+          ctx.stroke();
+        }
+      }
+
+      function drawSnake(alpha) {
+        snake.forEach((seg, idx) => {
+          const prevSeg = prevSnake[idx] || seg;
+
+          const interpX = (prevSeg.x + (seg.x - prevSeg.x) * alpha) * tileSize;
+          const interpY = (prevSeg.y + (seg.y - prevSeg.y) * alpha) * tileSize;
+
+          const isHead = idx === 0;
+          const baseColor = isHead ? "#0ea5e9" : "#38bdf8";
+
+          ctx.fillStyle = baseColor;
+          ctx.fillRect(interpX + 2, interpY + 2, tileSize - 4, tileSize - 4);
+
+          const innerGradient = ctx.createLinearGradient(
+            interpX,
+            interpY,
+            interpX + tileSize,
+            interpY + tileSize
+          );
+          innerGradient.addColorStop(0, "rgba(248,250,252,0.5)");
+          innerGradient.addColorStop(1, "rgba(15,23,42,0)");
+          ctx.fillStyle = innerGradient;
+          ctx.fillRect(interpX + 3, interpY + 3, tileSize - 6, tileSize - 6);
+
+          ctx.strokeStyle = "rgba(15,23,42,0.9)";
+          ctx.lineWidth = 1;
+          ctx.strokeRect(interpX + 2, interpY + 2, tileSize - 4, tileSize - 4);
+        });
+      }
+
+      function drawFood() {
+        const x = food.x * tileSize;
+        const y = food.y * tileSize;
+        const radius = tileSize / 2.4;
+
+        ctx.save();
+        ctx.translate(x + tileSize / 2, y + tileSize / 2);
+        const gradient = ctx.createRadialGradient(0, 0, 2, 0, 0, radius);
+        gradient.addColorStop(0, "#fee2e2");
+        gradient.addColorStop(0.4, "#f97373");
+        gradient.addColorStop(1, "#7f1d1d");
+        ctx.fillStyle = gradient;
+        ctx.beginPath();
+        ctx.arc(0, 0, radius, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.shadowColor = "rgba(248,113,113,0.7)";
+        ctx.shadowBlur = 12;
+        ctx.beginPath();
+        ctx.arc(0, 0, radius, 0, Math.PI * 2);
+        ctx.strokeStyle = "rgba(248,250,252,0.8)";
+        ctx.lineWidth = 1;
+        ctx.stroke();
+        ctx.restore();
+      }
+
+      // Distance from circle center to line segment
+      function segmentCircleIntersect(x1, y1, x2, y2, cx, cy, r) {
+        const dx = x2 - x1;
+        const dy = y2 - y1;
+        const lengthSq = dx * dx + dy * dy || 1;
+        let t = ((cx - x1) * dx + (cy - y1) * dy) / lengthSq;
+        t = Math.max(0, Math.min(1, t));
+        const closestX = x1 + t * dx;
+        const closestY = y1 + t * dy;
+        const distX = closestX - cx;
+        const distY = closestY - cy;
+        return distX * distX + distY * distY <= r * r;
+      }
+
+      function drawLasers(deltaSec) {
+        const fcX = food.x * tileSize + tileSize / 2;
+        const fcY = food.y * tileSize + tileSize / 2;
+        const fr = tileSize / 2.4;
+
+        for (let i = lasers.length - 1; i >= 0; i--) {
+          const l = lasers[i];
+
+          const prevX = l.x;
+          const prevY = l.y;
+
+          l.x += l.dx * deltaSec;
+          l.y += l.dy * deltaSec;
+
+          // Check collision with food
+          if (segmentCircleIntersect(prevX, prevY, l.x, l.y, fcX, fcY, fr)) {
+            // Laser collects the orb
+            lasers.splice(i, 1);
+
+            score += 1;
+            updateScore();
+            recalcSpeed();
+
+            laserCollectedCount += 1;
+            if (laserCollectedCount % 2 === 0 && laserPowerLevel < MAX_LASER_POWER) {
+              laserPowerLevel += 1;
+              updatePowerUI();
+            }
+
+            spawnFood();
+            continue;
+          }
+
+          // Out of bounds?
+          if (
+            l.x < -20 ||
+            l.y < -20 ||
+            l.x > canvas.width + 20 ||
+            l.y > canvas.height + 20
+          ) {
+            lasers.splice(i, 1);
+            continue;
+          }
+
+          // Draw as glowing streak
+          ctx.save();
+          ctx.globalCompositeOperation = "lighter";
+          ctx.shadowBlur = 18;
+          ctx.shadowColor = l.color;
+
+          ctx.beginPath();
+          ctx.moveTo(prevX, prevY);
+          ctx.lineTo(l.x, l.y);
+          ctx.strokeStyle = l.color;
+          ctx.lineWidth = 2.4 + (laserPowerLevel - 1) * 0.6;
+          ctx.stroke();
+
+          ctx.restore();
+        }
+      }
+
+      function setDirection(dx, dy) {
+        // Prevent reversing directly
+        if (dx === -direction.x && dy === -direction.y) return;
+        nextDirection = { x: dx, y: dy };
+      }
+
+      function fireLaser(timestamp) {
+        if (direction.x === 0 && direction.y === 0) return;
+        if (timestamp - lastLaserTime < LASER_COOLDOWN) return;
+        lastLaserTime = timestamp;
+
+        const head = snake[0];
+        const headPxX = head.x * tileSize + tileSize / 2;
+        const headPxY = head.y * tileSize + tileSize / 2;
+
+        const dirLen = Math.sqrt(direction.x * direction.x + direction.y * direction.y) || 1;
+        const baseSpeed = BASE_LASER_SPEED * (1 + 0.3 * (laserPowerLevel - 1));
+        const vx = (direction.x / dirLen) * baseSpeed;
+        const vy = (direction.y / dirLen) * baseSpeed;
+
+        // Perpendicular for beam spread
+        const perpX = -direction.y;
+        const perpY = direction.x;
+        const perpLen = Math.sqrt(perpX * perpX + perpY * perpY) || 1;
+        const normPerpX = perpX / perpLen;
+        const normPerpY = perpY / perpLen;
+
+        // Offsets based on power
+        let offsets;
+        if (laserPowerLevel === 1) {
+          offsets = [0];
+        } else if (laserPowerLevel === 2) {
+          offsets = [-4, 4];
+        } else {
+          // level 3
+          offsets = [-6, 0, 6];
+        }
+
+        const colors = [
+          "rgba(56,189,248,0.95)",
+          "rgba(129,140,248,0.95)",
+          "rgba(248,113,113,0.95)"
+        ];
+
+        offsets.forEach(offset => {
+          const startX = headPxX + normPerpX * offset;
+          const startY = headPxY + normPerpY * offset;
+          const color = colors[Math.floor(Math.random() * colors.length)];
+          lasers.push({
+            x: startX,
+            y: startY,
+            dx: vx,
+            dy: vy,
+            color
+          });
+        });
+      }
+
+      function gameStep() {
+        direction = nextDirection;
+
+        const head = snake[0];
+        const newHead = {
+          x: head.x + direction.x,
+          y: head.y + direction.y
+        };
+
+        // Wall collision
+        if (
+          newHead.x < 0 ||
+          newHead.y < 0 ||
+          newHead.x >= tilesX ||
+          newHead.y >= tilesY
+        ) {
+          endGame();
+          return;
+        }
+
+        // Self collision
+        if (snake.some(seg => seg.x === newHead.x && seg.y === newHead.y)) {
+          endGame();
+          return;
+        }
+
+        prevSnake = snake.map(seg => ({ ...seg }));
+
+        snake.unshift(newHead);
+
+        // Food?
+        if (newHead.x === food.x && newHead.y === food.y) {
+          score += 1;
+          updateScore();
+          recalcSpeed();
+          spawnFood();
+        } else {
+          snake.pop();
+        }
+      }
+
+      function render(alpha, deltaSec) {
+        drawBackground();
+        drawGrid();
+        drawFood();
+        drawSnake(alpha);
+        drawLasers(deltaSec);
+      }
+
+      function loop(timestamp) {
+        if (gameState !== "running") return;
+
+        if (!lastFrameTime) lastFrameTime = timestamp;
+        const deltaSec = (timestamp - lastFrameTime) / 1000;
+        lastFrameTime = timestamp;
+
+        stepAccumulator += deltaSec;
+
+        // Run one or more logical steps if needed
+        while (stepAccumulator >= stepDurationSec) {
+          gameStep();
+          if (gameState !== "running") {
+            // gameStep may end game
+            break;
+          }
+          stepAccumulator -= stepDurationSec;
+        }
+
+        const alpha = Math.min(stepAccumulator / stepDurationSec, 1);
+
+        render(alpha, deltaSec);
+
+        if (gameState === "running") {
+          requestAnimationFrame(loop);
+        }
+      }
+
+      function startGame() {
+        startOverlay.classList.remove("visible");
+        gameOverOverlay.classList.remove("visible");
+
+        score = 0;
+        updateScore();
+        recalcSpeed();
+
+        stepAccumulator = 0;
+        lastFrameTime = 0;
+        lasers.length = 0;
+
+        laserPowerLevel = 1;
+        laserCollectedCount = 0;
+        updatePowerUI();
+
+        initSnake();
+        spawnFood();
+
+        gameState = "running";
+        requestAnimationFrame(loop);
+      }
+
+      function endGame() {
+        if (gameState !== "running") return;
+        gameState = "over";
+        finalScoreText.textContent = `You scored ${score} point${score === 1 ? "" : "s"}.`;
+        gameOverOverlay.classList.add("visible");
+      }
+
+      function handleKeyDown(e) {
+        const key = e.key.toLowerCase();
+
+        if (key === " " || key === "spacebar") {
+          e.preventDefault();
+          if (gameState === "idle" || gameState === "over") {
+            startGame();
+          }
+          return;
+        }
+
+        if (gameState !== "running") return;
+
+        switch (key) {
+          case "arrowup":
+          case "w":
+            setDirection(0, -1);
+            break;
+          case "arrowdown":
+          case "s":
+            setDirection(0, 1);
+            break;
+          case "arrowleft":
+          case "a":
+            setDirection(-1, 0);
+            break;
+          case "arrowright":
+          case "d":
+            setDirection(1, 0);
+            break;
+          case "l":
+            fireLaser(performance.now());
+            break;
+        }
+      }
+
+      // Event listeners
+      window.addEventListener("keydown", handleKeyDown);
+      startButton.addEventListener("click", () => {
+        if (gameState !== "running") startGame();
+      });
+      restartButton.addEventListener("click", () => {
+        if (gameState !== "running") startGame();
+      });
+
+      // Initial setup
+      loadHighScore();
+      initSnake();
+      spawnFood();
+      recalcSpeed();
+      updatePowerUI();
+
+      // Draw static preview frame
+      drawBackground();
+      drawGrid();
+      prevSnake = snake.map(seg => ({ ...seg }));
+      render(0, 0);
+    })();
+  </script>
+</body>
+</html>
